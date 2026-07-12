@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+  // Self-hosted runtime dependencies (no unpkg.com dependency at runtime).
+  window.__resources = {
+    "https://unpkg.com/react@18.3.1/umd/react.production.min.js": "./vendor/react.production.min.js",
+    "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js": "./vendor/react-dom.production.min.js",
+    "https://unpkg.com/@babel/standalone@7.29.0/babel.min.js": "./vendor/babel.min.js"
+  };
+</script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Sigrhold · Donald Thompson · Reality Capture Pipelines &amp; Applied R&amp;D</title>
+<link rel="icon" type="image/png" href="assets/logo-mark.png" />
+<meta name="description" content="Capturing what exists. Testing what comes next. Field reality capture, 3DGS experimentation, and practical workflow R&D by Donald Thompson." />
+<meta property="og:title" content="Sigrhold · Donald Thompson" />
+<meta property="og:description" content="Capturing what exists. Testing what comes next. Field reality capture, 3DGS experimentation, and applied R&D." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="assets/logo-mark.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #080b0a; }
+  a { color: #00b884; text-decoration: none; }
+  a:hover { color: #35d6a5; }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</helmet>
+
+<div style="min-height:100vh;font-family:'JetBrains Mono',monospace;display:flex;flex-direction:column;align-items:center;padding:{{ pagePad }};position:relative;background:{{ t.bg }};--panel:{{ t.panel }};--panelAlt:{{ t.panelAlt }};--border:{{ t.border }};--border2:{{ t.border2 }};--border3:{{ t.border3 }};--text:{{ t.text }};--text2:{{ t.text2 }};--mid:{{ t.mid }};--mid2:{{ t.mid2 }};--dim:{{ t.dim }};--faint:{{ t.faint }};--footer:{{ t.footer }};--accent:{{ t.accent }};--chipBorder:{{ t.chipBorder }};--postTitle:{{ t.postTitle }};--identityBg:{{ t.identityBg }};--scan:{{ t.scan }};">
+
+  <sc-if value="{{ showScanlines }}" hint-placeholder-val="{{ true }}">
+    <div style="position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(180deg, var(--scan, rgba(0,184,132,.03)) 0 1px, transparent 1px 4px);z-index:5;"></div>
+  </sc-if>
+
+  <div style="width:100%;max-width:1320px;flex:1;display:flex;flex-direction:column;gap:{{ gridGap }};position:relative;">
+
+    <!-- STATUS BAR -->
+    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--border, #16201b);border-radius:10px;background:var(--panel, #0b110e);padding:14px 20px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <img src="assets/rune.png" alt="Sigrhold rune mark" style="width:44px;height:44px;filter:brightness(0) saturate(100%) invert(58%) sepia(72%) saturate(500%) hue-rotate(115deg);" />
+        <span style="font-weight:800;letter-spacing:2px;color:var(--text, #e8f0eb);font-size:15px;">SIGRHOLD</span>
+        <span style="font-size:11px;color:var(--dim, #5f7168);border-left:1px solid var(--border3, #23312b);padding-left:12px;">personal command center</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:18px;font-size:12px;color:var(--mid2, #7d8f86);">
+        <span style="display:flex;align-items:center;gap:7px;"><span style="width:8px;height:8px;border-radius:50%;background:#00b884;display:block;"></span>online · {{ region }}</span>
+        <sc-if value="{{ showClock }}" hint-placeholder-val="{{ true }}">
+          <span style="color:var(--text2, #cdd8d1);">{{ clock }}</span>
+        </sc-if>
+        <button onClick="{{ toggleTheme }}" aria-label="Toggle color theme" style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--text2, #cdd8d1);background:var(--panelAlt, #0a0f0d);border:1px solid var(--border3, #23312b);border-radius:6px;padding:6px 12px;cursor:pointer;" style-hover="border-color:#00b884;" style-focus="outline:2px solid #00b884;outline-offset:2px;">{{ themeLabel }}</button>
+        <sc-if value="{{ gearVisible }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ openSettings }}" aria-label="Open site settings" title="Site settings (owner tool)" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--dim, #6b7d74);background:transparent;border:1px solid transparent;border-radius:6px;padding:5px 8px;cursor:pointer;" style-hover="color:var(--text, #eef4f0);border-color:var(--border3, #23312b);" style-focus="outline:2px solid #00b884;outline-offset:2px;">⚙</button>
+        </sc-if>
+      </div>
+    </div>
+
+    <!-- STATS STRIP (real numbers only; hidden while empty) -->
+    <sc-if value="{{ hasStats }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:repeat({{ statCols }}, 1fr);gap:{{ gridGap }};">
+        <sc-for list="{{ stats }}" as="stat" hint-placeholder-count="4">
+          <div style="border:1px solid var(--border, #16201b);border-radius:12px;background:var(--panel, #0b110e);padding:16px 20px;display:flex;flex-direction:column;gap:4px;">
+            <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:30px;line-height:1;color:var(--text, #eef4f0);">{{ stat.value }}<span style="color:var(--accent, #00b884);font-size:18px;margin-left:2px;">{{ stat.unit }}</span></div>
+            <div style="font-size:11px;letter-spacing:1.5px;color:var(--dim, #5f7168);text-transform:uppercase;">{{ stat.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <!-- MAIN GRID -->
+    <div style="flex:1;display:grid;grid-template-columns:{{ gridCols }};gap:{{ gridGap }};">
+
+      <!-- IDENTITY -->
+      <div style="grid-column:{{ wideSpan }};border:1px solid var(--border, #16201b);border-radius:12px;background:var(--identityBg, linear-gradient(160deg,#0c1512,#0a0f0d));padding:{{ identityPad }};display:flex;flex-direction:column;justify-content:center;">
+        <div style="font-size:11px;letter-spacing:2.5px;color:var(--accent, #00b884);margin-bottom:18px;">{{ eyebrow }}</div>
+        <h1 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:{{ brandSize }};line-height:1.04;color:var(--text, #eef4f0);letter-spacing:-1.2px;margin:0;">{{ brandLine }}</h1>
+        <div style="font-size:14px;color:var(--text2, #cdd8d1);margin-top:18px;"><span style="font-weight:700;">{{ name }}</span><span style="color:var(--dim, #6b7d74);"> · {{ title }}</span></div>
+        <p style="max-width:560px;font-size:14px;line-height:1.7;color:var(--mid, #93a69c);margin:14px 0 0;">{{ bio }}</p>
+        <sc-if value="{{ hasButtons }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;">
+            <sc-if value="{{ hasPrimaryAction }}" hint-placeholder-val="{{ false }}">
+              <a href="{{ primaryActionUrl }}" style="background:#00b884;color:#06110c;font-weight:700;font-size:13px;letter-spacing:1px;padding:11px 20px;border-radius:7px;display:inline-block;" style-hover="background:#35d6a5;color:#06110c;" style-focus="outline:2px solid #00b884;outline-offset:2px;">{{ primaryActionLabel }} →</a>
+            </sc-if>
+            <sc-if value="{{ hasResume }}" hint-placeholder-val="{{ false }}">
+              <a href="{{ resumeUrl }}" style="border:1px solid var(--border3, #23312b);color:var(--text2, #cdd8d1);font-size:13px;padding:11px 20px;border-radius:7px;display:inline-block;" style-hover="border-color:#00b884;color:var(--text, #eef4f0);" style-focus="outline:2px solid #00b884;outline-offset:2px;">resume ↓</a>
+            </sc-if>
+          </div>
+        </sc-if>
+      </div>
+
+      <!-- LATEST NOTES -->
+      <div style="border:1px solid var(--border, #16201b);border-radius:12px;background:var(--panel, #0b110e);padding:22px;display:flex;flex-direction:column;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><span style="font-size:12px;letter-spacing:2px;color:var(--accent, #00b884);">LATEST NOTES</span><span style="font-size:11px;color:var(--faint, #4d5b53);">published elsewhere</span></div>
+        <sc-if value="{{ hasPosts }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <sc-for list="{{ latestPosts }}" as="post" hint-placeholder-count="3">
+              <a href="{{ post.url }}" target="_blank" rel="noopener noreferrer" style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-top:1px solid var(--border2, #141d18);padding-top:12px;" style-hover="opacity:.8;" style-focus="outline:2px solid #00b884;outline-offset:2px;">
+                <span style="display:flex;flex-direction:column;gap:4px;min-width:0;">
+                  <span style="font-size:13px;color:var(--postTitle, #dfe9e2);line-height:1.4;">{{ post.headline }}</span>
+                  <span style="font-size:11px;color:var(--dim, #6b7d74);">{{ post.venue }} · {{ post.date }}</span>
+                </span>
+                <span style="color:var(--accent, #00b884);font-size:12px;flex-shrink:0;">↗</span>
+              </a>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ noPosts }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:20px 10px;">
+            <span style="font-size:12px;line-height:1.7;color:var(--dim, #6b7d74);text-align:center;">Field notes and experiment reports are being prepared.</span>
+          </div>
+        </sc-if>
+      </div>
+
+      <!-- FIELD WORK & EXPERIMENTS -->
+      <div style="grid-column:{{ wideSpan }};border:1px solid var(--border, #16201b);border-radius:12px;background:var(--panel, #0b110e);padding:22px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><span style="font-size:12px;letter-spacing:2px;color:var(--accent, #00b884);">FIELD WORK &amp; EXPERIMENTS</span><span style="font-size:11px;color:var(--faint, #4d5b53);">status</span></div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <sc-for list="{{ focusProjects }}" as="p" hint-placeholder-count="1">
+            <a href="{{ p.linkUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;border-radius:9px;background:var(--panelAlt, #0a0f0d);border:1px solid var(--border2, #141d18);border-left:3px solid #00b884;" style-hover="border-color:#00b884;" style-focus="outline:2px solid #00b884;outline-offset:2px;">
+              <span style="display:flex;align-items:center;gap:14px;min-width:0;">
+                <span style="width:8px;height:8px;border-radius:50%;background:{{ p.dotColor }};display:block;flex-shrink:0;"></span>
+                <span style="display:flex;flex-direction:column;gap:3px;min-width:0;">
+                  <span><span style="font-size:15px;font-weight:700;color:var(--text, #eef4f0);">{{ p.name }}</span> <span style="font-size:11px;color:var(--accent, #00b884);border:1px solid var(--chipBorder, #17402f);border-radius:20px;padding:2px 9px;margin-left:6px;white-space:nowrap;">current focus</span></span>
+                  <span style="font-size:12px;line-height:1.5;color:var(--mid2, #7d8f86);">{{ p.description }}</span>
+                  <span style="font-size:11px;color:var(--dim, #6b7d74);margin-top:2px;">{{ p.status }} · updated {{ p.updated }}</span>
+                </span>
+              </span>
+              <span style="font-size:12px;color:var(--accent, #00b884);white-space:nowrap;flex-shrink:0;">{{ p.arrow }}</span>
+            </a>
+          </sc-for>
+          <div style="display:grid;grid-template-columns:{{ projCols }};gap:10px;">
+            <sc-for list="{{ otherProjects }}" as="p" hint-placeholder-count="2">
+              <a href="{{ p.linkUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:14px 16px;border-radius:9px;background:var(--panelAlt, #0a0f0d);border:1px solid var(--border2, #141d18);" style-hover="border-color:#00b884;" style-focus="outline:2px solid #00b884;outline-offset:2px;">
+                <span style="display:flex;align-items:flex-start;gap:12px;min-width:0;">
+                  <span style="width:8px;height:8px;border-radius:50%;background:{{ p.dotColor }};display:block;flex-shrink:0;margin-top:5px;"></span>
+                  <span style="display:flex;flex-direction:column;gap:3px;min-width:0;">
+                    <span style="font-size:14px;font-weight:700;color:var(--text, #eef4f0);">{{ p.name }}</span>
+                    <span style="font-size:11px;line-height:1.5;color:var(--mid2, #7d8f86);">{{ p.description }}</span>
+                    <span style="font-size:11px;color:var(--dim, #6b7d74);margin-top:2px;">{{ p.status }} · updated {{ p.updated }}</span>
+                  </span>
+                </span>
+                <span style="font-size:12px;color:var(--accent, #00b884);white-space:nowrap;flex-shrink:0;">{{ p.arrow }}</span>
+              </a>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONNECT -->
+      <div style="border:1px solid var(--border, #16201b);border-radius:12px;background:var(--panel, #0b110e);padding:22px;display:flex;flex-direction:column;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><span style="font-size:12px;letter-spacing:2px;color:var(--accent, #00b884);">CONNECT</span><span style="font-size:11px;color:var(--faint, #4d5b53);">{{ linkCount }} links</span></div>
+        <sc-if value="{{ noLinks }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:20px 10px;">
+            <span style="font-size:12px;line-height:1.7;color:var(--dim, #6b7d74);text-align:center;">Destinations are being wired up.</span>
+          </div>
+        </sc-if>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <sc-for list="{{ visibleLinks }}" as="link" hint-placeholder-count="4">
+            <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border-radius:8px;background:var(--panelAlt, #0a0f0d);border:1px solid var(--border2, #141d18);" style-hover="border-color:#00b884;" style-focus="outline:2px solid #00b884;outline-offset:2px;">
+              <span style="display:flex;align-items:center;gap:11px;min-width:0;">
+                <span style="width:26px;height:26px;border-radius:6px;background:{{ link.iconBg }};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:12px;flex-shrink:0;">{{ link.icon }}</span>
+                <span style="display:flex;flex-direction:column;min-width:0;">
+                  <span style="font-size:13px;color:var(--text, #eef4f0);">{{ link.label }}</span>
+                  <span style="font-size:11px;color:var(--dim, #6b7d74);">{{ link.description }}</span>
+                </span>
+              </span>
+              <span style="color:var(--accent, #00b884);font-size:12px;flex-shrink:0;">↗</span>
+            </a>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px;font-size:11px;color:var(--footer, #3f4d45);letter-spacing:1px;padding:2px 4px;">
+      <span>© 2026 SIGRHOLD · SIBLING BRAND TO GROUNDED SIGNAL</span>
+      <span>DEPLOYED ON DIGITALOCEAN</span>
+    </div>
+  </div>
+
+  <!-- SETTINGS PANEL (owner tool) -->
+  <sc-if value="{{ settingsOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:50;background:rgba(4,8,6,.72);display:flex;justify-content:flex-end;" onClick="{{ closeSettings }}">
+      <div style="width:min(560px, 100%);height:100%;overflow-y:auto;background:var(--panel, #0b110e);border-left:1px solid var(--border3, #23312b);padding:24px;display:flex;flex-direction:column;gap:22px;font-size:13px;color:var(--text2, #cdd8d1);" onClick="{{ stopClick }}">
+
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-weight:800;letter-spacing:2px;color:var(--text, #eef4f0);font-size:14px;">⚙ SITE SETTINGS</div>
+            <div style="font-size:11px;color:var(--dim, #6b7d74);margin-top:4px;">Edits preview live. To publish: Copy or Download, then replace content.js on your server.</div>
+          </div>
+          <button onClick="{{ closeSettings }}" aria-label="Close settings" style="font-family:'JetBrains Mono',monospace;background:transparent;border:1px solid var(--border3, #23312b);border-radius:6px;color:var(--text2, #cdd8d1);padding:6px 11px;cursor:pointer;" style-hover="border-color:#00b884;" style-focus="outline:2px solid #00b884;">✕</button>
+        </div>
+
+        <div style="display:flex;gap:10px;">
+          <button onClick="{{ copyContent }}" style="flex:1;font-family:'JetBrains Mono',monospace;background:#00b884;color:#06110c;font-weight:700;border:none;border-radius:7px;padding:11px;cursor:pointer;font-size:12px;" style-hover="background:#35d6a5;" style-focus="outline:2px solid #00b884;outline-offset:2px;">{{ copyLabel }}</button>
+          <button onClick="{{ downloadContent }}" style="flex:1;font-family:'JetBrains Mono',monospace;background:transparent;color:var(--text2, #cdd8d1);border:1px solid var(--border3, #23312b);border-radius:7px;padding:11px;cursor:pointer;font-size:12px;" style-hover="border-color:#00b884;" style-focus="outline:2px solid #00b884;outline-offset:2px;">Download content.js</button>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="font-size:11px;letter-spacing:2px;color:var(--accent, #00b884);">PROFILE</div>
+          <sc-for list="{{ profileFields }}" as="f" hint-placeholder-count="6">
+            <label style="display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--dim, #6b7d74);">{{ f.label }}
+              <input value="{{ f.value }}" onChange="{{ f.onChange }}" style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panelAlt, #0a0f0d);border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--text, #eef4f0);padding:8px 10px;" style-focus="outline:2px solid #00b884;" />
+            </label>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;letter-spacing:2px;color:var(--accent, #00b884);">CONNECT LINKS</span><button onClick="{{ addLink }}" style="font-family:'JetBrains Mono',monospace;background:transparent;border:1px solid var(--border3, #23312b);border-radius:6px;color:var(--text2, #cdd8d1);padding:4px 10px;cursor:pointer;font-size:11px;" style-hover="border-color:#00b884;">+ add</button></div>
+          <sc-for list="{{ editLinks }}" as="l" hint-placeholder-count="4">
+            <div style="border:1px solid var(--border2, #141d18);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:6px;background:var(--panelAlt, #0a0f0d);">
+              <div style="display:flex;gap:8px;">
+                <input value="{{ l.label }}" onChange="{{ l.onLabel }}" placeholder="Label" style="flex:1;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel, #0b110e);border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--text, #eef4f0);padding:7px 9px;" style-focus="outline:2px solid #00b884;" />
+                <button onClick="{{ l.onRemove }}" aria-label="Remove link" style="font-family:'JetBrains Mono',monospace;background:transparent;border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--dim, #6b7d74);padding:4px 9px;cursor:pointer;" style-hover="border-color:#c95b4d;color:#c95b4d;">✕</button>
+              </div>
+              <input value="{{ l.description }}" onChange="{{ l.onDescription }}" placeholder="Why this destination exists" style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel, #0b110e);border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--text, #eef4f0);padding:7px 9px;" style-focus="outline:2px solid #00b884;" />
+              <input value="{{ l.url }}" onChange="{{ l.onUrl }}" placeholder="https://...  (blank hides the row)" style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel, #0b110e);border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--text, #eef4f0);padding:7px 9px;" style-focus="outline:2px solid #00b884;" />
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;letter-spacing:2px;color:var(--accent, #00b884);">FIELD WORK &amp; EXPERIMENTS</span><button onClick="{{ addProject }}" style="font-family:'JetBrains Mono',monospace;background:transparent;border:1px solid var(--border3, #23312b);border-radius:6px;color:var(--text2, #cdd8d1);padding:4px 10px;cursor:pointer;font-size:11px;" style-hover="border-color:#00b884;">+ add</button></div>
+          <sc-for list="{{ editProjects }}" as="p" hint-placeholder-count="3">
+            <div style="border:1px solid var(--border2, #141d18);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:6px;background:var(--panelAlt, #0a0f0d);">
+              <div style="display:flex;gap:8px;">
+                <input value="{{ p.name }}" onChange="{{ p.onName }}" placeholder="Project name" style="flex:1;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel, #0b110e);border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--text, #eef4f0);padding:7px 9px;" style-focus="outline:2px solid #00b884;" />
+                <button onClick="{{ p.onRemove }}" aria-label="Remove project" style="font-family:'JetBrains Mono',monospace;background:transparent;border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--dim, #6b7d74);padding:4px 9px;cursor:pointer;" style-hover="border-color:#c95b4d;color:#c95b4d;">✕</button>
+              </div>
+              <textarea value="{{ p.description }}" onChange="{{ p.onDescription }}" placeholder="One or two honest sentences" rows="2" style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel, #0b110e);border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--text, #eef4f0);padding:7px 9px;resize:vertical;" style-focus="outline:2px solid #00b884;"></textarea>
+              <div style="display:flex;gap:8px;">
+                <input value="{{ p.status }}" onChange="{{ p.onStatus }}" placeholder="Status" style="flex:1.4;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel, #0b110e);border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--text, #eef4f0);padding:7px 9px;" style-focus="outline:2px solid #00b884;" />
+                <select value="{{ p.statusTone }}" onChange="{{ p.onStatusTone }}" style="flex:1;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel, #0b110e);border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--text, #eef4f0);padding:7px 9px;" style-focus="outline:2px solid #00b884;">
+                  <option value="green">green</option>
+                  <option value="amber">amber</option>
+                  <option value="gray">gray</option>
+                </select>
+                <input value="{{ p.updated }}" onChange="{{ p.onUpdated }}" placeholder="Jul 2026" style="flex:1;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel, #0b110e);border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--text, #eef4f0);padding:7px 9px;" style-focus="outline:2px solid #00b884;" />
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <input value="{{ p.destination }}" onChange="{{ p.onDestination }}" placeholder="Destination" style="flex:1;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel, #0b110e);border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--text, #eef4f0);padding:7px 9px;" style-focus="outline:2px solid #00b884;" />
+                <input value="{{ p.url }}" onChange="{{ p.onUrl }}" placeholder="URL (blank = not clickable)" style="flex:1.6;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel, #0b110e);border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--text, #eef4f0);padding:7px 9px;" style-focus="outline:2px solid #00b884;" />
+                <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--dim, #6b7d74);white-space:nowrap;cursor:pointer;"><input type="checkbox" checked="{{ p.currentFocus }}" onChange="{{ p.onFocus }}" style="accent-color:#00b884;" />focus</label>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;letter-spacing:2px;color:var(--accent, #00b884);">LATEST NOTES</span><button onClick="{{ addPost }}" style="font-family:'JetBrains Mono',monospace;background:transparent;border:1px solid var(--border3, #23312b);border-radius:6px;color:var(--text2, #cdd8d1);padding:4px 10px;cursor:pointer;font-size:11px;" style-hover="border-color:#00b884;">+ add</button></div>
+          <sc-for list="{{ editPosts }}" as="n" hint-placeholder-count="1">
+            <div style="border:1px solid var(--border2, #141d18);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:6px;background:var(--panelAlt, #0a0f0d);">
+              <div style="display:flex;gap:8px;">
+                <input value="{{ n.headline }}" onChange="{{ n.onHeadline }}" placeholder="Headline" style="flex:1;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel, #0b110e);border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--text, #eef4f0);padding:7px 9px;" style-focus="outline:2px solid #00b884;" />
+                <button onClick="{{ n.onRemove }}" aria-label="Remove note" style="font-family:'JetBrains Mono',monospace;background:transparent;border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--dim, #6b7d74);padding:4px 9px;cursor:pointer;" style-hover="border-color:#c95b4d;color:#c95b4d;">✕</button>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <input value="{{ n.venue }}" onChange="{{ n.onVenue }}" placeholder="Venue" style="flex:1;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel, #0b110e);border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--text, #eef4f0);padding:7px 9px;" style-focus="outline:2px solid #00b884;" />
+                <input value="{{ n.date }}" onChange="{{ n.onDate }}" placeholder="Jul 2026" style="flex:1;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel, #0b110e);border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--text, #eef4f0);padding:7px 9px;" style-focus="outline:2px solid #00b884;" />
+              </div>
+              <input value="{{ n.url }}" onChange="{{ n.onUrl }}" placeholder="URL" style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel, #0b110e);border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--text, #eef4f0);padding:7px 9px;" style-focus="outline:2px solid #00b884;" />
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;padding-bottom:30px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;letter-spacing:2px;color:var(--accent, #00b884);">STATS (real numbers only)</span><button onClick="{{ addStat }}" style="font-family:'JetBrains Mono',monospace;background:transparent;border:1px solid var(--border3, #23312b);border-radius:6px;color:var(--text2, #cdd8d1);padding:4px 10px;cursor:pointer;font-size:11px;" style-hover="border-color:#00b884;">+ add</button></div>
+          <sc-for list="{{ editStats }}" as="s" hint-placeholder-count="1">
+            <div style="display:flex;gap:8px;">
+              <input value="{{ s.value }}" onChange="{{ s.onValue }}" placeholder="Value" style="flex:.7;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panelAlt, #0a0f0d);border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--text, #eef4f0);padding:7px 9px;" style-focus="outline:2px solid #00b884;" />
+              <input value="{{ s.unit }}" onChange="{{ s.onUnit }}" placeholder="Unit" style="flex:.5;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panelAlt, #0a0f0d);border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--text, #eef4f0);padding:7px 9px;" style-focus="outline:2px solid #00b884;" />
+              <input value="{{ s.label }}" onChange="{{ s.onLabel }}" placeholder="Label" style="flex:1.6;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panelAlt, #0a0f0d);border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--text, #eef4f0);padding:7px 9px;" style-focus="outline:2px solid #00b884;" />
+              <button onClick="{{ s.onRemove }}" aria-label="Remove stat" style="font-family:'JetBrains Mono',monospace;background:transparent;border:1px solid var(--border2, #141d18);border-radius:6px;color:var(--dim, #6b7d74);padding:4px 9px;cursor:pointer;" style-hover="border-color:#c95b4d;color:#c95b4d;">✕</button>
+            </div>
+          </sc-for>
+        </div>
+
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showScanlines&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Effects&quot;},&quot;showClock&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Status bar&quot;},&quot;showStats&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Content&quot;},&quot;postCount&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:3,&quot;min&quot;:1,&quot;max&quot;:6,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Content&quot;}}">
+class Component extends DCLogic {
+  state = {
+    data: null,
+    now: new Date(),
+    vw: typeof window !== 'undefined' ? window.innerWidth : 1280,
+    settingsOpen: false,
+    gearVisible: false,
+    copied: false,
+    theme: (() => {
+      try {
+        const saved = localStorage.getItem('sigrhold_theme');
+        if (saved) return saved;
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) return 'light';
+      } catch (e) {}
+      return 'dark';
+    })(),
+  };
+
+  componentDidMount() {
+    import('./content.js').then((m) => {
+      this.setState({
+        data: {
+          profile: { ...(m.profile || {}) },
+          links: (m.links || []).map((x) => ({ ...x })),
+          projects: (m.projects || []).map((x) => ({ ...x })),
+          posts: (m.posts || []).map((x) => ({ ...x })),
+          stats: (m.stats || []).map((x) => ({ ...x })),
+          statsPerRow: m.statsPerRow || 4,
+        },
+      });
+    });
+    this.timer = setInterval(() => this.setState({ now: new Date() }), 30000);
+    this.onResize = () => this.setState({ vw: window.innerWidth });
+    window.addEventListener('resize', this.onResize);
+    // Owner shortcut: press "s" three times quickly (outside a text field)
+    // to reveal + open the settings panel.
+    this.sPresses = [];
+    this.onKeyDown = (e) => {
+      const tag = (e.target && e.target.tagName) || '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key !== 's' && e.key !== 'S') { this.sPresses = []; return; }
+      const now = Date.now();
+      this.sPresses = this.sPresses.filter((t) => now - t < 1200).concat(now);
+      if (this.sPresses.length >= 3) {
+        this.sPresses = [];
+        this.setState({ gearVisible: true, settingsOpen: true });
+      }
+    };
+    window.addEventListener('keydown', this.onKeyDown);
+  }
+
+  componentWillUnmount() {
+    if (this.timer) clearInterval(this.timer);
+    if (this.onResize) window.removeEventListener('resize', this.onResize);
+    if (this.onKeyDown) window.removeEventListener('keydown', this.onKeyDown);
+  }
+
+  mut(fn) {
+    this.setState((s) => {
+      const d = s.data;
+      if (!d) return {};
+      const copy = {
+        profile: { ...d.profile },
+        links: d.links.map((x) => ({ ...x })),
+        projects: d.projects.map((x) => ({ ...x })),
+        posts: d.posts.map((x) => ({ ...x })),
+        stats: d.stats.map((x) => ({ ...x })),
+        statsPerRow: d.statsPerRow,
+      };
+      fn(copy);
+      return { data: copy };
+    });
+  }
+
+  serialize() {
+    const d = this.state.data;
+    if (!d) return '';
+    const J = (v) => JSON.stringify(v == null ? '' : v);
+    let out = '// SIGRHOLD SITE CONTENT (generated by the settings panel)\n';
+    out += '// Blank URLs hide their controls. Empty lists hide panels.\n';
+    out += '// Order is manual: first items are featured or newest.\n\n';
+    out += 'export const profile = {\n';
+    ['name','title','eyebrow','brandLine','bio','email','region','primaryActionLabel','primaryActionUrl','resumeUrl'].forEach((k) => {
+      out += '  ' + k + ': ' + J(d.profile[k]) + ',\n';
+    });
+    out += '};\n\nexport const links = [\n';
+    d.links.forEach((l) => {
+      out += '  { label: ' + J(l.label) + ', description: ' + J(l.description) + ', url: ' + J(l.url) + ' },\n';
+    });
+    out += '];\n\nexport const projects = [\n';
+    d.projects.forEach((p) => {
+      out += '  {\n    name: ' + J(p.name) + ',\n    description: ' + J(p.description) + ',\n    status: ' + J(p.status) + ',\n    statusTone: ' + J(p.statusTone || 'green') + ',\n    updated: ' + J(p.updated) + ',\n    destination: ' + J(p.destination) + ',\n    url: ' + J(p.url) + ',\n    currentFocus: ' + (p.currentFocus ? 'true' : 'false') + ',\n  },\n';
+    });
+    out += '];\n\nexport const posts = [\n';
+    d.posts.forEach((n) => {
+      out += '  { headline: ' + J(n.headline) + ', venue: ' + J(n.venue) + ', date: ' + J(n.date) + ', url: ' + J(n.url) + ' },\n';
+    });
+    out += '];\n\nexport const stats = [\n';
+    d.stats.forEach((s) => {
+      out += '  { value: ' + J(s.value) + ', unit: ' + J(s.unit) + ', label: ' + J(s.label) + ' },\n';
+    });
+    out += '];\n\nexport const statsPerRow = ' + (d.statsPerRow || 4) + ';\n';
+    return out;
+  }
+
+  renderVals() {
+    const d = this.state.data;
+    const profile = (d && d.profile) || {};
+    const links = (d && d.links) || [];
+    const projects = (d && d.projects) || [];
+    const posts = (d && d.posts) || [];
+    const stats = (d && d.stats) || [];
+    const loaded = !!d;
+
+    const dark = {
+      bg: 'radial-gradient(120% 90% at 15% -10%, #0d1613 0%, #080b0a 55%)',
+      scan: 'rgba(0,184,132,.03)',
+      panel: '#0b110e', panelAlt: '#0a0f0d',
+      border: '#16201b', border2: '#141d18', border3: '#23312b',
+      text: '#eef4f0', text2: '#cdd8d1', mid: '#93a69c', mid2: '#7d8f86',
+      dim: '#6b7d74', faint: '#4d5b53', footer: '#3f4d45',
+      accent: '#00b884', chipBorder: '#17402f', postTitle: '#dfe9e2',
+      identityBg: 'linear-gradient(160deg,#0c1512,#0a0f0d)',
+    };
+    const light = {
+      bg: 'radial-gradient(120% 90% at 15% -10%, #f8f9f3 0%, #eceee5 60%)',
+      scan: 'rgba(0,140,100,.05)',
+      panel: '#f7f8f2', panelAlt: '#eef0e8',
+      border: '#d5dacd', border2: '#dfe3d7', border3: '#c6ccbd',
+      text: '#0c110f', text2: '#2c352d', mid: '#4d574f', mid2: '#57615a',
+      dim: '#767f74', faint: '#8a938a', footer: '#8a938a',
+      accent: '#008f66', chipBorder: '#8fd4b8', postTitle: '#20291f',
+      identityBg: 'linear-gradient(160deg,#f3f5ec,#edefe6)',
+    };
+    const isLight = this.state.theme === 'light';
+    const t = isLight ? light : dark;
+
+    const tones = { green: '#00b884', amber: '#e0a83b', gray: isLight ? '#9aa294' : '#4d5b53' };
+    const iconMap = {
+      linkedin:  { icon: 'in', iconBg: '#0a66c2' },
+      github:    { icon: '⎇', iconBg: isLight ? '#2c352d' : '#1c2620' },
+      instagram: { icon: '◎', iconBg: 'linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)' },
+      email:     { icon: '✉', iconBg: isLight ? '#2c352d' : '#1c2620' },
+    };
+
+    const visibleLinks = links
+      .filter((l) => l.url && l.url.length)
+      .map((l) => ({ ...l, ...(iconMap[(l.label || '').toLowerCase()] || { icon: '→', iconBg: isLight ? '#2c352d' : '#1c2620' }) }));
+
+    const featured = projects.slice(0, 3).map((p) => ({
+      ...p,
+      dotColor: tones[p.statusTone] || tones.gray,
+      linkUrl: p.url && p.url.length ? p.url : undefined,
+      arrow: p.url && p.url.length ? '↗' : '',
+    }));
+
+    const latestPosts = posts.slice(0, this.props.postCount ?? 3);
+
+    const hh = this.state.now.getUTCHours().toString().padStart(2, '0');
+    const mm = this.state.now.getUTCMinutes().toString().padStart(2, '0');
+
+    const vw = this.state.vw;
+    const mobile = vw < 720;
+    const tablet = vw >= 720 && vw < 1024;
+    const perRow = d ? (d.statsPerRow || stats.length || 1) : 4;
+
+    // settings editor bindings
+    const profileFieldDefs = [
+      ['name', 'Name'], ['title', 'Title'], ['eyebrow', 'Eyebrow'],
+      ['brandLine', 'Brand line'], ['bio', 'Bio'], ['email', 'Email'],
+      ['region', 'Region'], ['primaryActionLabel', 'Primary action label'],
+      ['primaryActionUrl', 'Primary action URL'], ['resumeUrl', 'Resume URL'],
+    ];
+    const profileFields = profileFieldDefs.map(([key, label]) => ({
+      label,
+      value: profile[key] || '',
+      onChange: (e) => this.mut((c) => { c.profile[key] = e.target.value; }),
+    }));
+
+    const bindList = (listName, fields) => ((d && d[listName]) || []).map((item, i) => {
+      const bound = { ...item };
+      fields.forEach((f) => {
+        const cap = 'on' + f.charAt(0).toUpperCase() + f.slice(1);
+        bound[cap] = (e) => this.mut((c) => { c[listName][i][f] = e.target.value; });
+      });
+      bound.onRemove = () => this.mut((c) => { c[listName].splice(i, 1); });
+      return bound;
+    });
+
+    const editLinks = bindList('links', ['label', 'description', 'url']);
+    const editPosts = bindList('posts', ['headline', 'venue', 'date', 'url']);
+    const editStats = bindList('stats', ['value', 'unit', 'label']);
+    const editProjects = bindList('projects', ['name', 'description', 'status', 'statusTone', 'updated', 'destination', 'url']).map((p, i) => ({
+      ...p,
+      onFocus: (e) => this.mut((c) => {
+        const on = e.target.checked;
+        c.projects.forEach((x, j) => { x.currentFocus = on && j === i; });
+      }),
+    }));
+
+    return {
+      t,
+      themeLabel: isLight ? '☾ dark' : '☀ light',
+      toggleTheme: () => {
+        const next = isLight ? 'dark' : 'light';
+        try { localStorage.setItem('sigrhold_theme', next); } catch (e) {}
+        this.setState({ theme: next });
+      },
+
+      eyebrow: profile.eyebrow,
+      brandLine: profile.brandLine,
+      name: profile.name,
+      title: profile.title,
+      bio: profile.bio,
+      region: profile.region,
+      primaryActionLabel: profile.primaryActionLabel,
+      primaryActionUrl: profile.primaryActionUrl,
+      resumeUrl: profile.resumeUrl,
+      hasPrimaryAction: !!(profile.primaryActionUrl && profile.primaryActionUrl.length && profile.primaryActionLabel && profile.primaryActionLabel.length),
+      hasResume: !!(profile.resumeUrl && profile.resumeUrl.length),
+      hasButtons: !!((profile.primaryActionUrl && profile.primaryActionUrl.length && profile.primaryActionLabel) || (profile.resumeUrl && profile.resumeUrl.length)),
+
+      visibleLinks,
+      linkCount: visibleLinks.length,
+      noLinks: loaded && visibleLinks.length === 0,
+      gearVisible: this.state.gearVisible,
+
+      focusProjects: featured.filter((p) => p.currentFocus),
+      otherProjects: featured.filter((p) => !p.currentFocus),
+
+      latestPosts,
+      hasPosts: loaded ? latestPosts.length > 0 : true,
+      noPosts: loaded ? latestPosts.length === 0 : false,
+
+      stats,
+      hasStats: (this.props.showStats ?? true) && stats.length > 0,
+      statCols: mobile ? Math.min(2, perRow) : Math.max(perRow, 1),
+
+      clock: hh + ':' + mm + ' UTC',
+      showScanlines: this.props.showScanlines ?? true,
+      showClock: this.props.showClock ?? true,
+
+      pagePad: mobile ? '16px 14px 16px' : '28px 28px 20px',
+      gridGap: mobile ? '12px' : '18px',
+      gridCols: mobile ? '1fr' : (tablet ? '1fr 1fr' : '1fr 1fr 1fr'),
+      wideSpan: mobile ? 'auto' : (tablet ? '1 / span 2' : '1 / span 2'),
+      identityPad: mobile ? '26px 22px' : '34px 32px',
+      brandSize: mobile ? '32px' : '46px',
+      projCols: mobile ? '1fr' : '1fr 1fr',
+
+      settingsOpen: this.state.settingsOpen,
+      openSettings: () => this.setState({ settingsOpen: true }),
+      closeSettings: () => this.setState({ settingsOpen: false }),
+      stopClick: (e) => e.stopPropagation(),
+      copyLabel: this.state.copied ? '✓ Copied' : 'Copy content.js',
+      copyContent: () => {
+        try {
+          navigator.clipboard.writeText(this.serialize());
+          this.setState({ copied: true });
+          setTimeout(() => this.setState({ copied: false }), 2000);
+        } catch (e) {}
+      },
+      downloadContent: () => {
+        const blob = new Blob([this.serialize()], { type: 'text/javascript' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'content.js';
+        a.click();
+        URL.revokeObjectURL(a.href);
+      },
+
+      profileFields,
+      editLinks,
+      editProjects,
+      editPosts,
+      editStats,
+      addLink: () => this.mut((c) => { c.links.push({ label: '', description: '', url: '' }); }),
+      addProject: () => this.mut((c) => { c.projects.push({ name: '', description: '', status: '', statusTone: 'green', updated: '', destination: 'GitHub', url: '', currentFocus: false }); }),
+      addPost: () => this.mut((c) => { c.posts.unshift({ headline: '', venue: 'LinkedIn', date: '', url: '' }); }),
+      addStat: () => this.mut((c) => { c.stats.push({ value: '', unit: '', label: '' }); }),
+    };
+  }
+}
+</script>
+</body>
+</html>
