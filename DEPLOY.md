@@ -9,9 +9,6 @@ folder structure, and you are live.
 - content.js      ALL your content. This is the only file you edit.
 - support.js      runtime the site needs (do not edit)
 - assets/         logo and rune images
-- vendor/         self-hosted runtime libraries (react, react-dom,
-                  babel). Do not edit or delete — without these the
-                  site would depend on unpkg.com being up.
 
 ## Option A: DigitalOcean App Platform (recommended, simplest)
 
@@ -33,22 +30,9 @@ redeploys automatically, so updating = edit content.js, commit, push.
 3. Point your domain's A record at the droplet IP.
 4. Add HTTPS: certbot --nginx -d sigrhold.dev
 
-## Before you share the URL — fill these in
-
-Open content.js (or the settings panel) and set:
-
-1. Connect links — LinkedIn / GitHub / Instagram URLs and your
-   contact email are currently blank, so those rows are hidden.
-   The commented templates are right above them in content.js.
-2. profile.email — blank.
-3. Optional: primaryActionLabel/Url, resumeUrl, posts, stats —
-   all blank and hidden until filled.
-
 ## Updating the site later
 
-1. Open the live site and press the "s" key three times quickly.
-   (The gear icon is hidden from visitors; the shortcut opens the
-   same settings panel.)
+1. Open the live site, click the gear icon (top right).
 2. Make your edits in the panel. They preview instantly.
 3. Click "Download content.js" (or Copy).
 4. Replace content.js on the server:
@@ -61,7 +45,8 @@ instructions are written inside the file.
 
 ## Notes
 
-- The settings panel changes nothing on the server. It only edits
-  your own browser's view until you replace content.js. It is hidden
-  behind the triple-"s" shortcut, so visitors won't stumble into it.
+- The gear/settings panel is visible to anyone but changes nothing on
+  the server. It only edits the visitor's own view until you replace
+  content.js. Ask Claude to hide it behind a keyboard shortcut if you
+  prefer.
 - No build step, no database, no dependencies to maintain.

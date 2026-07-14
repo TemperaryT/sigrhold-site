@@ -36,16 +36,10 @@ export const profile = {
 // theirs automatically; anything else gets a generic one).
 // Blank url = row hidden. Description explains WHY it exists.
 export const links = [
-  // Blank URLs keep these rows hidden. Fill them in (here or via the
-  // settings panel) when the destinations are ready:
-  //   LinkedIn:  https://linkedin.com/in/YOURHANDLE
-  //   GitHub:    https://github.com/YOURHANDLE
-  //   Instagram: https://instagram.com/YOURHANDLE
-  //   Email:     mailto:you@yourdomain
-  { label: 'LinkedIn',  description: 'Professional writing and updates',        url: '' },
-  { label: 'GitHub',    description: 'Projects, experiments, and documentation', url: '' },
-  { label: 'Instagram', description: 'Field captures and visual work',           url: '' },
-  { label: 'Email',     description: 'Direct contact',                           url: '' },
+  { label: 'LinkedIn',  description: 'Professional writing and updates',        url: 'https://linkedin.com/in/YOURHANDLE' },
+  { label: 'GitHub',    description: 'Projects, experiments, and documentation', url: 'https://github.com/YOURHANDLE' },
+  { label: 'Instagram', description: 'Field captures and visual work',           url: 'https://instagram.com/YOURHANDLE' },
+  { label: 'Email',     description: 'Direct contact',                           url: 'mailto:hello@sigrhold.dev' },
 ];
 
 

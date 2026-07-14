@@ -3,26 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script>
-  // Self-hosted runtime dependencies (no unpkg.com dependency at runtime).
-  window.__resources = {
-    "https://unpkg.com/react@18.3.1/umd/react.production.min.js": "./vendor/react.production.min.js",
-    "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js": "./vendor/react-dom.production.min.js",
-    "https://unpkg.com/@babel/standalone@7.29.0/babel.min.js": "./vendor/babel.min.js"
-  };
-</script>
 <script src="./support.js"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <title>Sigrhold · Donald Thompson · Reality Capture Pipelines &amp; Applied R&amp;D</title>
-<link rel="icon" type="image/png" href="assets/logo-mark.png" />
+<link rel="icon" type="image/png" href="assets/favicon.png" />
 <meta name="description" content="Capturing what exists. Testing what comes next. Field reality capture, 3DGS experimentation, and practical workflow R&D by Donald Thompson." />
 <meta property="og:title" content="Sigrhold · Donald Thompson" />
 <meta property="og:description" content="Capturing what exists. Testing what comes next. Field reality capture, 3DGS experimentation, and applied R&D." />
 <meta property="og:type" content="website" />
-<meta property="og:image" content="assets/logo-mark.png" />
+<meta property="og:image" content="assets/social-avatar.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -48,9 +40,17 @@
     <!-- STATUS BAR -->
     <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--border, #16201b);border-radius:10px;background:var(--panel, #0b110e);padding:14px 20px;">
       <div style="display:flex;align-items:center;gap:12px;">
-        <img src="assets/rune.png" alt="Sigrhold rune mark" style="width:44px;height:44px;filter:brightness(0) saturate(100%) invert(58%) sepia(72%) saturate(500%) hue-rotate(115deg);" />
+        <span style="width:44px;height:44px;display:inline-block;position:relative;">
+          <sc-if value="{{ isLightTheme }}" hint-placeholder-val="{{ false }}">
+            <img src="assets/sigrhold-symbol-light.png" alt="Sigrhold mark" style="width:44px;height:44px;object-fit:contain;display:block;" />
+          </sc-if>
+          <sc-if value="{{ isDarkTheme }}" hint-placeholder-val="{{ true }}">
+            <img src="assets/sigrhold-symbol-dark.png" alt="Sigrhold mark" style="width:44px;height:44px;object-fit:contain;display:block;" />
+          </sc-if>
+        </span>
+        <span style="width:1px;height:32px;background:var(--border3, #23312b);display:inline-block;"></span>
         <span style="font-weight:800;letter-spacing:2px;color:var(--text, #e8f0eb);font-size:15px;">SIGRHOLD</span>
-        <span style="font-size:11px;color:var(--dim, #5f7168);border-left:1px solid var(--border3, #23312b);padding-left:12px;">personal command center</span>
+        <span style="font-size:11px;letter-spacing:2px;color:var(--dim, #5f7168);border-left:1px solid var(--border3, #23312b);padding-left:12px;">COMMAND CENTER</span>
       </div>
       <div style="display:flex;align-items:center;gap:18px;font-size:12px;color:var(--mid2, #7d8f86);">
         <span style="display:flex;align-items:center;gap:7px;"><span style="width:8px;height:8px;border-radius:50%;background:#00b884;display:block;"></span>online · {{ region }}</span>
@@ -58,9 +58,7 @@
           <span style="color:var(--text2, #cdd8d1);">{{ clock }}</span>
         </sc-if>
         <button onClick="{{ toggleTheme }}" aria-label="Toggle color theme" style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--text2, #cdd8d1);background:var(--panelAlt, #0a0f0d);border:1px solid var(--border3, #23312b);border-radius:6px;padding:6px 12px;cursor:pointer;" style-hover="border-color:#00b884;" style-focus="outline:2px solid #00b884;outline-offset:2px;">{{ themeLabel }}</button>
-        <sc-if value="{{ gearVisible }}" hint-placeholder-val="{{ false }}">
-          <button onClick="{{ openSettings }}" aria-label="Open site settings" title="Site settings (owner tool)" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--dim, #6b7d74);background:transparent;border:1px solid transparent;border-radius:6px;padding:5px 8px;cursor:pointer;" style-hover="color:var(--text, #eef4f0);border-color:var(--border3, #23312b);" style-focus="outline:2px solid #00b884;outline-offset:2px;">⚙</button>
-        </sc-if>
+        <button onClick="{{ openSettings }}" aria-label="Open site settings" title="Site settings (owner tool)" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--dim, #6b7d74);background:transparent;border:1px solid transparent;border-radius:6px;padding:5px 8px;cursor:pointer;" style-hover="color:var(--text, #eef4f0);border-color:var(--border3, #23312b);" style-focus="outline:2px solid #00b884;outline-offset:2px;">⚙</button>
       </div>
     </div>
 
@@ -158,11 +156,6 @@
       <!-- CONNECT -->
       <div style="border:1px solid var(--border, #16201b);border-radius:12px;background:var(--panel, #0b110e);padding:22px;display:flex;flex-direction:column;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><span style="font-size:12px;letter-spacing:2px;color:var(--accent, #00b884);">CONNECT</span><span style="font-size:11px;color:var(--faint, #4d5b53);">{{ linkCount }} links</span></div>
-        <sc-if value="{{ noLinks }}" hint-placeholder-val="{{ false }}">
-          <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:20px 10px;">
-            <span style="font-size:12px;line-height:1.7;color:var(--dim, #6b7d74);text-align:center;">Destinations are being wired up.</span>
-          </div>
-        </sc-if>
         <div style="display:flex;flex-direction:column;gap:6px;">
           <sc-for list="{{ visibleLinks }}" as="link" hint-placeholder-count="4">
             <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border-radius:8px;background:var(--panelAlt, #0a0f0d);border:1px solid var(--border2, #141d18);" style-hover="border-color:#00b884;" style-focus="outline:2px solid #00b884;outline-offset:2px;">
@@ -296,7 +289,6 @@ class Component extends DCLogic {
     now: new Date(),
     vw: typeof window !== 'undefined' ? window.innerWidth : 1280,
     settingsOpen: false,
-    gearVisible: false,
     copied: false,
     theme: (() => {
       try {
@@ -324,27 +316,11 @@ class Component extends DCLogic {
     this.timer = setInterval(() => this.setState({ now: new Date() }), 30000);
     this.onResize = () => this.setState({ vw: window.innerWidth });
     window.addEventListener('resize', this.onResize);
-    // Owner shortcut: press "s" three times quickly (outside a text field)
-    // to reveal + open the settings panel.
-    this.sPresses = [];
-    this.onKeyDown = (e) => {
-      const tag = (e.target && e.target.tagName) || '';
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      if (e.key !== 's' && e.key !== 'S') { this.sPresses = []; return; }
-      const now = Date.now();
-      this.sPresses = this.sPresses.filter((t) => now - t < 1200).concat(now);
-      if (this.sPresses.length >= 3) {
-        this.sPresses = [];
-        this.setState({ gearVisible: true, settingsOpen: true });
-      }
-    };
-    window.addEventListener('keydown', this.onKeyDown);
   }
 
   componentWillUnmount() {
     if (this.timer) clearInterval(this.timer);
     if (this.onResize) window.removeEventListener('resize', this.onResize);
-    if (this.onKeyDown) window.removeEventListener('keydown', this.onKeyDown);
   }
 
   mut(fn) {
@@ -492,6 +468,8 @@ class Component extends DCLogic {
 
     return {
       t,
+      isLightTheme: isLight,
+      isDarkTheme: !isLight,
       themeLabel: isLight ? '☾ dark' : '☀ light',
       toggleTheme: () => {
         const next = isLight ? 'dark' : 'light';
@@ -514,8 +492,6 @@ class Component extends DCLogic {
 
       visibleLinks,
       linkCount: visibleLinks.length,
-      noLinks: loaded && visibleLinks.length === 0,
-      gearVisible: this.state.gearVisible,
 
       focusProjects: featured.filter((p) => p.currentFocus),
       otherProjects: featured.filter((p) => !p.currentFocus),
