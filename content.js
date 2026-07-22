@@ -39,7 +39,7 @@ export const links = [
   { label: 'LinkedIn',  description: 'Professional writing and updates',         url: 'https://www.linkedin.com/in/donald-thompson-careers' },
   { label: 'GitHub',    description: 'Projects, experiments, and documentation', url: 'https://github.com/YOURHANDLE' },
   { label: 'Instagram', description: 'Field captures and visual work',           url: 'https://instagram.com/YOURHANDLE' },
-  { label: 'Email',     description: 'Direct contact',                           url: 'mailto:hello@sigrhold.dev' },
+  { label: 'Email',     description: 'Direct contact',                           url: 'mailto:donald@sigrhold.com' },
 ];
 
 
