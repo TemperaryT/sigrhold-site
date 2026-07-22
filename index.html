@@ -294,7 +294,7 @@ class Component extends DCLogic {
       try {
         const saved = localStorage.getItem('sigrhold_theme');
         if (saved) return saved;
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) return 'light';
+        
       } catch (e) {}
       return 'dark';
     })(),
