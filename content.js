@@ -23,7 +23,7 @@ export const profile = {
   eyebrow: 'REALITY CAPTURE PIPELINES · APPLIED R&D',
   brandLine: 'Capturing what exists. Testing what comes next.',
   bio: 'Reality capture does not end when the scan is complete. I work across field acquisition, 3DGS experimentation, and practical workflow R&D, testing what holds up under real project conditions and documenting what I learn.',
-  email: '',                    // shown in Connect via the Email row below
+  email: 'donald@sighold.com',                    // shown in Connect via the Email row below
   region: 'nyc3',               // shows in the status bar next to "online"
   primaryActionLabel: '',       // e.g. 'VIEW CURRENT FOCUS' — '' hides the button
   primaryActionUrl: '',         // where it goes (can be a project URL)
@@ -36,7 +36,7 @@ export const profile = {
 // theirs automatically; anything else gets a generic one).
 // Blank url = row hidden. Description explains WHY it exists.
 export const links = [
-  { label: 'LinkedIn',  description: 'Professional writing and updates',        url: 'https://linkedin.com/in/YOURHANDLE' },
+  { label: 'LinkedIn',  description: 'Professional writing and updates',         url: 'https://www.linkedin.com/in/donald-thompson-careers' },
   { label: 'GitHub',    description: 'Projects, experiments, and documentation', url: 'https://github.com/YOURHANDLE' },
   { label: 'Instagram', description: 'Field captures and visual work',           url: 'https://instagram.com/YOURHANDLE' },
   { label: 'Email',     description: 'Direct contact',                           url: 'mailto:hello@sigrhold.dev' },
